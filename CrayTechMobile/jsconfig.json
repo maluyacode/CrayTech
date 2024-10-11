@@ -1,0 +1,33 @@
+{
+    "compilerOptions": {
+        "module": "ESNext",
+        "moduleResolution": "Bundler",
+        "target": "ES2020",
+        "jsx": "react",
+        "allowImportingTsExtensions": true,
+        "strictNullChecks": true,
+        "strictFunctionTypes": true,
+        "baseUrl": "./", // Set the base URL for the project root
+        "paths": {
+            "@/*": [
+                "./*"
+            ], // Alias for the project root
+            "@assets/*": [
+                "./assets/*"
+            ], // Alias for assets folder
+            "@Components/*": [
+                "./Components/*"
+            ], // Alias for components folder
+            "@Screens/*": [
+                "./Screens/*"
+            ], // Alias for screens folder
+            "@Validations/*": [
+                "./Validations/*"
+            ] // Alias for screens folder
+        }
+    },
+    "exclude": [
+        "node_modules",
+        "**/node_modules/*"
+    ]
+}
