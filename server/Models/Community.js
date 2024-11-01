@@ -29,7 +29,8 @@ const communityModel = new mongoose.Schema({
                 required: true,
             },
             role: {
-                type: String, // 'moderator', 'member'
+                type: String, // 'moderator', 'member',
+                default: 'member'
             }
         }
     ],

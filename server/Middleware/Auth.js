@@ -3,18 +3,25 @@ const jwt = require("jsonwebtoken")
 
 exports.isAuthenticated = async (req, res, next) => {
 
-    const token = req.headers.authorization.split(" ")[1];
-    console.log(token)
+    try {
+        const token = req.headers.authorization.split(" ")[1];
+        console.log(token)
 
-    if (!token) {
-        return res.status(401).json({ message: 'Login first to access this resource' })
+        if (!token) {
+            return res.status(401).json({ message: 'Login first to access this resource' })
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET)
+
+        req.user = await User.findById(decoded.id);
+
+        next()
+    } catch (err) {
+        console.log(err)
+        return res.status(500).json({
+            message: 'Something wrong with authentication',
+        })
     }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET)
-
-    req.user = await User.findById(decoded.id);
-
-    next()
 };
 
 exports.isAuthorized = (...roles) => {

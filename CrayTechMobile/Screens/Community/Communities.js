@@ -6,6 +6,9 @@ import axios from 'axios'
 import baseURL from '@/assets/common/baseUrl'
 import { useSelector } from 'react-redux'
 import { useFocusEffect } from '@react-navigation/native';
+import CommunityCard from '@/Components/CommunityCard'
+import CommunityLists from '@/Components/CommunityLists'
+import { ScrollView } from 'react-native-gesture-handler'
 
 const LeftContent = props => <Avatar.Icon {...props} icon="group" />
 const RightContent = (props) => {
@@ -19,8 +22,9 @@ export default function Communities({ navigation }) {
     const appTheme = useTheme();
     const { token } = useSelector(state => state.auth);
     const [joinedCommunities, setJoinedCommunities] = useState([]);
+    const [communities, setCommunities] = useState([]);
 
-    const getCommunities = async () => {
+    const getJoinedCommunities = async () => {
 
         try {
 
@@ -37,9 +41,28 @@ export default function Communities({ navigation }) {
         }
     }
 
+    const getCommunities = async () => {
+        try {
+
+            const { data } = await axios.get(`${baseURL}/communities`, {
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+
+            setCommunities(data.communities);
+
+            console.log(data.communities.length)
+
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
     useFocusEffect(
         useCallback(() => {
 
+            getJoinedCommunities();
             getCommunities();
 
         }, [])
@@ -50,34 +73,39 @@ export default function Communities({ navigation }) {
             <Button onPress={() => navigation.navigate("CommunityCreate")} mode='outlined' icon={"plus"} style={{ margin: 10 }}>
                 Create Community
             </Button>
+            <ScrollView>
+                <View>
+                    <Text style={{ paddingHorizontal: 10 }}>Moderating</Text>
 
-            <View>
-                <Text style={{ paddingHorizontal: 10 }}>Moderating</Text>
-
-                <View style={{ marginTop: 10 }}>
-                    <FlatList
-                        showsHorizontalScrollIndicator={false}
-                        style={{ paddingHorizontal: 10 }}
-                        horizontal={true}
-                        data={joinedCommunities}
-                        renderItem={({ item }) => (
-                            <Card onPress={() => navigation.navigate("CommunityDetails", item)} mode='outlined' style={{ width: 300, marginRight: 20 }}>
-                                <Card.Title
-                                    titleNumberOfLines={3}
-                                    title={item.name}
-                                    subtitle={<Text variant='bodySmall'>{item.members.length} members</Text>}
-                                    subtitleStyle={{ marginTop: -5 }}
-                                    left={LeftContent}
-                                />
-                                <Card.Content>
-                                    <Text variant="bodyMedium">{item.description}</Text>
-                                </Card.Content>
-                            </Card>
-                        )}
-                    />
+                    <View style={{ marginTop: 10 }}>
+                        <CommunityLists communities={joinedCommunities} />
+                    </View>
                 </View>
-            </View>
 
+                <View style={{ marginTop: 20 }}>
+                    <Text style={{ paddingHorizontal: 10 }}>Recommended 💎</Text>
+
+                    <View style={{ marginTop: 10 }}>
+                        <CommunityLists communities={communities} />
+                    </View>
+                </View>
+
+                <View style={{ marginTop: 20 }}>
+                    <Text style={{ paddingHorizontal: 10 }}>Popular 🔥</Text>
+
+                    <View style={{ marginTop: 10 }}>
+                        <CommunityLists communities={communities} />
+                    </View>
+                </View>
+
+                <View style={{ marginTop: 20 }}>
+                    <Text style={{ paddingHorizontal: 10 }}>Other Communities</Text>
+
+                    <View style={{ marginTop: 10 }}>
+                        <CommunityLists communities={communities} />
+                    </View>
+                </View>
+            </ScrollView>
         </View>
     )
 }

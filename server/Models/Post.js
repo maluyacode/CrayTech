@@ -4,7 +4,7 @@ const postSchema = new mongoose.Schema({
     author: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true
+        required: true,
     },
     community: {
         type: mongoose.Schema.Types.ObjectId,
@@ -34,9 +34,13 @@ const postSchema = new mongoose.Schema({
     }],
     upvotes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     downvotes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
+    comments: [{
+        content: { type: mongoose.Schema.Types.ObjectId, ref: 'Comment' },
+        author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+    }],
+    shares: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 }, {
-    timestamps: true
+    timestamps: true,
 });
 
 module.exports = mongoose.model('Post', postSchema);

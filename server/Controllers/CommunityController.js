@@ -1,4 +1,5 @@
 const Community = require("../Models/Community")
+const Post = require("../Models/Post")
 const { uploadSingle } = require("../Utils/ImageFile")
 
 
@@ -53,17 +54,24 @@ exports.createCommunity = async (req, res, next) => {
         errorHandler({ error: err, response: res })
     }
 }
+
 exports.getCommunity = async (req, res, next) => {
 
     try {
 
         console.log(req.params)
 
-        const community = await Community.findById(req.params.id);
+        const community = await Community.findById(req.params.id)
+        const posts = await Post.where("community", community._id)
+            .populate("community")
+            .populate('author');
+
+        console.log(posts);
 
         res.json({
             success: true,
-            community: community
+            community: community,
+            posts,
         })
 
     } catch (err) {
@@ -106,5 +114,40 @@ exports.getCommunities = async (req, res, next) => {
     }
 }
 
-exports.updateCommunity = async (req, res, next) => { }
+exports.updateCommunity = async (req, res, next) => {
+
+    try {
+
+        const community = await Community.findById(req.params.id);
+
+        
+        let parseMembers = {};
+        if (req.body.members) {
+            parseMembers = JSON.parse(req.body.members)
+        }
+        // add other fields to be updated when needed
+
+        const newCommunityData = {
+            ...community.toObject(),
+            ...req.body,
+            members: parseMembers,
+            // add other fields to be updated when needed
+        }
+
+        const updatedCommunity = await Community.findByIdAndUpdate(req.params.id, newCommunityData, { new: true });
+
+        console.log(updatedCommunity);
+
+        res.json({
+            success: true,
+            community: updatedCommunity,
+        })
+
+    } catch (err) {
+        console.log(err);
+        errorHandler({ error: err, response: res })
+    }
+
+
+}
 exports.deleteCommunity = async (req, res, next) => { }

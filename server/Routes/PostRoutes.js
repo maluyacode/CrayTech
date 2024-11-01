@@ -13,4 +13,12 @@ router.post("/post/create",
     postController.create
 );
 
+router.get("/posts", isAuthenticated, postController.getPosts);
+
+router.put("/upvote/:id", isAuthenticated, upload.none(), postController.upvote);
+
+router.put("/downvote/:id", isAuthenticated, upload.none(), postController.downvote);
+
+router.get('/post/:id', isAuthenticated, postController.getPost);
+
 module.exports = router;

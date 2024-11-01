@@ -15,6 +15,9 @@ import { Pressable, View } from 'react-native';
 const Stack = createStackNavigator();
 
 export default function CommunityNavigations() {
+
+    const appTheme = useTheme();
+
     return (
         <Stack.Navigator
             initialRouteName='Communities'
@@ -61,7 +64,7 @@ export default function CommunityNavigations() {
                         return (
                             <View style={{ backgroundColor: useTheme().colors.background, height: 50, paddingHorizontal: 10, flexDirection: 'row', gap: 10, alignItems: 'center' }}>
                                 <Pressable onPress={() => navigation.goBack()}>
-                                    <MaterialCommunityIcons size={30} name='keyboard-return' />
+                                    <MaterialCommunityIcons size={30} name='keyboard-return' color={appTheme.colors.primary} />
                                 </Pressable>
                                 <Text variant='titleMedium'>Community</Text>
                             </View>
@@ -79,7 +82,7 @@ export default function CommunityNavigations() {
                         return (
                             <View style={{ backgroundColor: useTheme().colors.background, height: 50, paddingHorizontal: 10, flexDirection: 'row', gap: 10, alignItems: 'center' }}>
                                 <Pressable onPress={() => navigation.goBack()}>
-                                    <MaterialCommunityIcons size={30} name='keyboard-return' />
+                                    <MaterialCommunityIcons size={30} name='keyboard-return' color={appTheme.colors.primary} />
                                 </Pressable>
                                 <Text variant='titleMedium'>Modification Tools</Text>
                             </View>
