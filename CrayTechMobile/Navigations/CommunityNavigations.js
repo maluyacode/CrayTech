@@ -11,6 +11,12 @@ import CommunityDetails from '@/Screens/Community/CommunityDetails';
 import { Text, useTheme } from 'react-native-paper';
 import ModTools from '@/Screens/Community/ModTools';
 import { Pressable, View } from 'react-native';
+import CommunityStyleUpdate from '@/Screens/Community/UpdateScreens/CommunityStyleUpdate';
+import BanUsers from '@/Screens/Community/BanUsers';
+import CommunityUpdateDetails from '@/Screens/Community/UpdateScreens/CommunityUpdateDetails';
+import CommunityTypeUpdate from '@/Screens/Community/UpdateScreens/CommunityTypeUpdate';
+import CommunityMembers from '@/Screens/Community/UpdateScreens/CommunityMembers';
+import DeleteCommunity from '@/Screens/Community/DeleteCommunity';
 
 const Stack = createStackNavigator();
 
@@ -90,6 +96,110 @@ export default function CommunityNavigations() {
                     }
                 }}
                 name='ModTools' component={ModTools}
+            />
+
+            <Stack.Screen
+                options={{
+                    headerShown: true,
+                    header: ({ navigation }) => {
+                        return (
+                            <View style={{ backgroundColor: useTheme().colors.background, height: 50, paddingHorizontal: 10, flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+                                <Pressable onPress={() => navigation.goBack()}>
+                                    <MaterialCommunityIcons size={30} name='keyboard-return' color={appTheme.colors.primary} />
+                                </Pressable>
+                                <Text variant='titleMedium'>Community Style</Text>
+                            </View>
+                        )
+                    }
+                }}
+                name='CommunityStyleUpdate' component={CommunityStyleUpdate}
+            />
+
+
+            <Stack.Screen
+                options={{
+                    headerShown: true,
+                    header: ({ navigation }) => {
+                        return (
+                            <View style={{ backgroundColor: useTheme().colors.background, height: 50, paddingHorizontal: 10, flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+                                <Pressable onPress={() => navigation.goBack()}>
+                                    <MaterialCommunityIcons size={30} name='keyboard-return' color={appTheme.colors.primary} />
+                                </Pressable>
+                                <Text variant='titleMedium'>Banned Users</Text>
+                            </View>
+                        )
+                    }
+                }}
+                name='BanUsers' component={BanUsers}
+            />
+
+            <Stack.Screen
+                options={{
+                    headerShown: true,
+                    header: ({ navigation }) => {
+                        return (
+                            <View style={{ backgroundColor: useTheme().colors.background, height: 50, paddingHorizontal: 10, flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+                                <Pressable onPress={() => navigation.goBack()}>
+                                    <MaterialCommunityIcons size={30} name='keyboard-return' color={appTheme.colors.primary} />
+                                </Pressable>
+                                <Text variant='titleMedium'>Community Details</Text>
+                            </View>
+                        )
+                    }
+                }}
+                name='CommunityUpdateDetails' component={CommunityUpdateDetails}
+            />
+
+            <Stack.Screen
+                options={{
+                    headerShown: true,
+                    header: ({ navigation }) => {
+                        return (
+                            <View style={{ backgroundColor: useTheme().colors.background, height: 50, paddingHorizontal: 10, flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+                                <Pressable onPress={() => navigation.goBack()}>
+                                    <MaterialCommunityIcons size={30} name='keyboard-return' color={appTheme.colors.primary} />
+                                </Pressable>
+                                <Text variant='titleMedium'>Community Type</Text>
+                            </View>
+                        )
+                    }
+                }}
+                name='CommunityTypeUpdate' component={CommunityTypeUpdate}
+            />
+
+
+            <Stack.Screen
+                options={{
+                    headerShown: true,
+                    header: ({ navigation }) => {
+                        return (
+                            <View style={{ backgroundColor: useTheme().colors.background, height: 50, paddingHorizontal: 10, flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+                                <Pressable onPress={() => navigation.goBack()}>
+                                    <MaterialCommunityIcons size={30} name='keyboard-return' color={appTheme.colors.primary} />
+                                </Pressable>
+                                <Text variant='titleMedium'>Community Members</Text>
+                            </View>
+                        )
+                    }
+                }}
+                name='CommunityMembers' component={CommunityMembers}
+            />
+
+            <Stack.Screen
+                options={{
+                    headerShown: true,
+                    header: ({ navigation }) => {
+                        return (
+                            <View style={{ backgroundColor: useTheme().colors.background, height: 50, paddingHorizontal: 10, flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+                                <Pressable onPress={() => navigation.goBack()}>
+                                    <MaterialCommunityIcons size={30} name='keyboard-return' color={appTheme.colors.primary} />
+                                </Pressable>
+                                <Text variant='titleMedium'>Community Deletion</Text>
+                            </View>
+                        )
+                    }
+                }}
+                name='DeleteCommunity' component={DeleteCommunity}
             />
 
         </Stack.Navigator>

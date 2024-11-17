@@ -35,13 +35,13 @@ const communityModel = new mongoose.Schema({
         }
     ],
     topics: [
-        { type: mongoose.Schema.Types.ObjectId }
+        { type: mongoose.Schema.Types.ObjectId, }
     ],
 
     community_type: { type: String, required: true }, // (private, restricted, public)
     allowed_posts: { type: String, required: true, default: 'any' }, // 'any', 'text only'
     banned_users: [
-        { type: mongoose.Schema.Types.ObjectId }
+        { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
     ],
 }, { timestamps: true })
 

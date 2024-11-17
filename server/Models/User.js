@@ -20,8 +20,9 @@ const userSchema = new mongoose.Schema(
         theme: { type: String, enum: ["light", "dark"], default: "light" },
         notifications: {
           replies: { type: Boolean, default: true },
-          mentions: { type: Boolean, default: true },
+          comments: { type: Boolean, default: true },
           communityUpdates: { type: Boolean, default: true },
+          messageNotify: { type: Boolean, default: true },
         },
         privacy: {
           showEmail: { type: Boolean, default: false },
@@ -38,6 +39,7 @@ const userSchema = new mongoose.Schema(
     joinedCommunities: [
       { type: mongoose.Schema.Types.ObjectId }
     ],
+    notificationToken: String,
     resetPasswordToken: String,
     resetPasswordExpire: Date,
   },

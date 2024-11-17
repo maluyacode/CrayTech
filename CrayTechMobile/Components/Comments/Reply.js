@@ -2,17 +2,31 @@ import { View, } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Avatar, Text, IconButton } from 'react-native-paper'
 import CommentAction from './CommentAction'
+import { deleteCommentAPI } from '@/services/commentService';
+import { useSelector } from 'react-redux';
 
 export default function Reply({ reply }) {
 
     const [textContent, setTextContent] = useState('');
+    const { token } = useSelector(state => state.auth);
 
-    const deleteComment = () => {
+    const deleteComment = async () => {
         setTextContent('𝘊𝘰𝘮𝘮𝘦𝘯𝘵 𝘥𝘦𝘭𝘦𝘵𝘦𝘥!');
+        try {
+
+            const data = await deleteCommentAPI({ token: token, id: reply._id });
+
+        } catch (err) {
+            console.log(err);
+        }
     }
 
     useEffect(() => {
-        setTextContent(reply.text_content);
+        if (reply.deleted) {
+            setTextContent('𝘊𝘰𝘮𝘮𝘦𝘯𝘵 𝘥𝘦𝘭𝘦𝘵𝘦𝘥!');
+        } else {
+            setTextContent(reply.text_content);
+        }
     }, [])
 
     return (
@@ -42,6 +56,7 @@ export default function Reply({ reply }) {
                     methods={{
                         deleteComment
                     }}
+                    comment={reply}
                 />
             )}
         </View>

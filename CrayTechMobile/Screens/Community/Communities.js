@@ -9,6 +9,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import CommunityCard from '@/Components/CommunityCard'
 import CommunityLists from '@/Components/CommunityLists'
 import { ScrollView } from 'react-native-gesture-handler'
+import { getCommunitiesAPI } from '@/services/communityService'
 
 const LeftContent = props => <Avatar.Icon {...props} icon="group" />
 const RightContent = (props) => {
@@ -22,17 +23,34 @@ export default function Communities({ navigation }) {
     const appTheme = useTheme();
     const { token } = useSelector(state => state.auth);
     const [joinedCommunities, setJoinedCommunities] = useState([]);
+    const [moderatingCommunities, setModeratingCommunities] = useState([]);
     const [communities, setCommunities] = useState([]);
+    const [otherCommunities, setOtherCommunities] = useState([]);
+
+    const getModeratingCommunities = async () => {
+
+        try {
+
+            const data = await getCommunitiesAPI({
+                token: token,
+                query: 'filter=moderating'
+            })
+
+            setModeratingCommunities(data.communities);
+
+        } catch (err) {
+            console.error(err);
+        }
+    }
 
     const getJoinedCommunities = async () => {
 
         try {
 
-            const { data } = await axios.get(`${baseURL}/communities?filter=auth`, {
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
-            });
+            const data = await getCommunitiesAPI({
+                token: token,
+                query: 'filter=joined'
+            })
 
             setJoinedCommunities(data.communities);
 
@@ -44,15 +62,12 @@ export default function Communities({ navigation }) {
     const getCommunities = async () => {
         try {
 
-            const { data } = await axios.get(`${baseURL}/communities`, {
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
-            });
+            const data = await getCommunitiesAPI({
+                token: token,
+                query: 'filter=others'
+            })
 
-            setCommunities(data.communities);
-
-            console.log(data.communities.length)
+            setOtherCommunities(data.communities);
 
         } catch (err) {
             console.error(err);
@@ -61,10 +76,9 @@ export default function Communities({ navigation }) {
 
     useFocusEffect(
         useCallback(() => {
-
+            getModeratingCommunities();
             getJoinedCommunities();
             getCommunities();
-
         }, [])
     )
 
@@ -73,37 +87,42 @@ export default function Communities({ navigation }) {
             <Button onPress={() => navigation.navigate("CommunityCreate")} mode='outlined' icon={"plus"} style={{ margin: 10 }}>
                 Create Community
             </Button>
-            <ScrollView>
-                <View>
-                    <Text style={{ paddingHorizontal: 10 }}>Moderating</Text>
+            <ScrollView showsVerticalScrollIndicator={false}>
+                <View style={{ marginBottom: 30 }}>
+                    <View>
+                        <Text style={{ paddingHorizontal: 10 }} variant='titleMedium'>Moderating</Text>
 
-                    <View style={{ marginTop: 10 }}>
-                        <CommunityLists communities={joinedCommunities} />
+                        <View style={{ marginTop: 10 }}>
+                            <CommunityLists communities={moderatingCommunities} />
+                        </View>
+                        {moderatingCommunities.length <= 0 &&
+                            <View style={{ paddingHorizontal: 10, }}>
+                                <Text>Create your own community</Text>
+                            </View>
+                        }
                     </View>
-                </View>
 
-                <View style={{ marginTop: 20 }}>
-                    <Text style={{ paddingHorizontal: 10 }}>Recommended 💎</Text>
+                    <View style={{ marginTop: 20 }}>
+                        <Text style={{ paddingHorizontal: 10 }} variant='titleMedium'>Joined Communities</Text>
 
-                    <View style={{ marginTop: 10 }}>
-                        <CommunityLists communities={communities} />
+                        <View style={{ marginTop: 10 }}>
+                            <CommunityLists communities={joinedCommunities} />
+                        </View>
+                        {joinedCommunities.length <= 0 &&
+                            <View style={{ paddingHorizontal: 10, }}>
+                                <Text>You are involve in any communities yet.</Text>
+                            </View>
+                        }
                     </View>
-                </View>
 
-                <View style={{ marginTop: 20 }}>
-                    <Text style={{ paddingHorizontal: 10 }}>Popular 🔥</Text>
+                    <View style={{ marginTop: 20 }}>
+                        <Text style={{ paddingHorizontal: 10 }} variant='titleMedium'>Other Communities 💎</Text>
 
-                    <View style={{ marginTop: 10 }}>
-                        <CommunityLists communities={communities} />
+                        <View style={{ marginTop: 10 }}>
+                            <CommunityLists communities={otherCommunities} />
+                        </View>
                     </View>
-                </View>
 
-                <View style={{ marginTop: 20 }}>
-                    <Text style={{ paddingHorizontal: 10 }}>Other Communities</Text>
-
-                    <View style={{ marginTop: 10 }}>
-                        <CommunityLists communities={communities} />
-                    </View>
                 </View>
             </ScrollView>
         </View>

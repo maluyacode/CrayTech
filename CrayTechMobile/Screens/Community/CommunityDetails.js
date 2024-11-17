@@ -32,6 +32,7 @@ export default function CommunityDetails({ route }) {
                 ...post,
                 post_type: post.videos.length > 0 ? "video" : post.images.length > 0 ? "image" : post.poll.length > 0 ? "poll" : "text"
             }))
+
             setPosts(data.posts);
 
         } catch (err) {
@@ -52,50 +53,55 @@ export default function CommunityDetails({ route }) {
     return (
         <View style={{ flex: 1, backgroundColor: appTheme.colors.background }}>
             <StatusBar translucent={true} />
-            <View style={{ height: 100 }}>
-                <ImageBackground
-                    source={{ uri: community.banner?.url }}
-                    style={{ height: 100 }}
-                    imageStyle={{ opacity: 0.6 }} // Adjust the opacity for blending effect
-                >
-                    <View
-                        style={{
-                            flex: 1,
-                            backgroundColor: appTheme.colors.backdrop,
-                            opacity: 0.4 // Adjust the background color opacity
-                        }}
-                    />
-                </ImageBackground>
-            </View>
 
-
-            <View style={{ padding: 10, }}>
-
-                <View style={{ flexDirection: 'row', gap: 10 }}>
-                    <Avatar.Image size={90} source={{ uri: community.avatar?.url }} />
-                    <View style={{ alignSelf: 'center' }}>
-                        <Text variant='titleMedium'>{community.name}</Text>
-                        <Text variant='labelSmall'>{community.members?.length} members</Text>
-                    </View>
-
-                    <ButtonAction community={community} />
-
-                </View>
-
-                <Text variant='bodySmall' style={{ marginTop: 5 }}>{community.description}</Text>
-
-            </View>
-
-            <View style={{ height: 1, backgroundColor: appTheme.colors.tertiaryContainer }}>
-
-            </View>
-
-            <View style={{ padding: 10, marginBottom: 100 }}>
+            <View >
                 <FlatList
-                    style={{ marginBottom: 60 }}
+                    ListHeaderComponent={() => (
+                        <>
+                            <View style={{ height: 100 }}>
+                                <ImageBackground
+                                    source={{ uri: community.banner?.url || placeHolder }}
+                                    style={{ height: 100 }}
+                                    imageStyle={{ opacity: 0.6 }} // Adjust the opacity for blending effect
+                                >
+                                    <View
+                                        style={{
+                                            flex: 1,
+                                            backgroundColor: appTheme.colors.backdrop,
+                                            opacity: 0.4 // Adjust the background color opacity
+                                        }}
+                                    />
+                                </ImageBackground>
+                            </View>
+
+
+                            <View style={{ padding: 10, }}>
+
+                                <View style={{ flexDirection: 'row', gap: 10 }}>
+                                    <Avatar.Image size={90} source={{ uri: community.avatar?.url || placeHolder }} />
+                                    <View style={{ alignSelf: 'center' }}>
+                                        <Text variant='titleMedium' style={{ width: 150, }}>{community.name}</Text>
+                                        <Text variant='labelSmall'>{community.members?.length} members</Text>
+                                    </View>
+
+                                    <ButtonAction community={community} />
+
+                                </View>
+
+                                <Text variant='bodySmall' style={{ marginTop: 5 }}>{community.description}</Text>
+
+                            </View>
+
+                            <View style={{ height: 1, backgroundColor: appTheme.colors.tertiaryContainer }}>
+
+                            </View>
+                        </>
+                    )}
                     data={posts}
                     renderItem={({ item }) => (
-                        <Post key={item._id} post={item} />
+                        <View style={{ padding: 10, }}>
+                            <Post post={item} />
+                        </View>
                     )}
                     keyExtractor={item => item._id}
                 />
@@ -104,7 +110,7 @@ export default function CommunityDetails({ route }) {
         </View>
     )
 }
-
+const placeHolder = 'https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png'
 const ButtonAction = ({ community }) => {
 
     const navigation = useNavigation();

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const mongooseDelete = require('mongoose-delete');
 
 const postSchema = new mongoose.Schema({
     author: {
@@ -42,5 +43,7 @@ const postSchema = new mongoose.Schema({
 }, {
     timestamps: true,
 });
+
+postSchema.plugin(mongooseDelete, { overrideMethods: 'all', deletedAt: true, deletedBy: true, });
 
 module.exports = mongoose.model('Post', postSchema);

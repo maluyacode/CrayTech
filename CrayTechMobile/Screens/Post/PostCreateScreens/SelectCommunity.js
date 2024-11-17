@@ -1,4 +1,4 @@
-import { FlatList, View } from 'react-native'
+import { Alert, FlatList, View } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react'
 import { Button, IconButton, Text, useTheme, TextInput as RNPInput, Card } from 'react-native-paper'
 import { Ionicons, MaterialCommunityIcons } from "react-native-vector-icons";
@@ -9,6 +9,7 @@ import axios from 'axios';
 import baseURL from '@/assets/common/baseUrl';
 import { useSelector } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
+import { getCommunitiesAPI } from '@/services/communityService';
 
 export default function SelectCommunity({ navigation, route }) {
 
@@ -25,11 +26,10 @@ export default function SelectCommunity({ navigation, route }) {
 
         try {
 
-            const { data } = await axios.get(`${baseURL}/communities?filter=auth`, {
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
-            });
+            const data = await getCommunitiesAPI({
+                token: token,
+                query: 'filter=alljoined'
+            })
 
             setJoinedCommunities(data.communities);
 
@@ -92,7 +92,9 @@ export default function SelectCommunity({ navigation, route }) {
             });
             setSubmiting(false)
 
-            alert("Successfully created")
+            Alert.alert("", "Posted successfully!")
+
+            navigation.navigate('HomeScreen');
 
         } catch (err) {
             setSubmiting(false)

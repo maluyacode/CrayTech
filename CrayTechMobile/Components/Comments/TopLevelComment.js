@@ -2,17 +2,31 @@ import { View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Avatar, Text, IconButton } from 'react-native-paper'
 import CommentAction from './CommentAction'
+import { deleteCommentAPI } from '@/services/commentService';
+import { useSelector } from 'react-redux';
 
 export default function TopLevelComment({ comment }) {
 
     const [textContent, setTextContent] = useState('');
+    const { token } = useSelector(state => state.auth);
 
-    const deleteComment = () => {
+    const deleteComment = async () => {
         setTextContent('𝘊𝘰𝘮𝘮𝘦𝘯𝘵 𝘥𝘦𝘭𝘦𝘵𝘦𝘥!');
+        try {
+
+            const data = await deleteCommentAPI({ token: token, id: comment._id });
+
+        } catch (err) {
+            console.log(err);
+        }
     }
 
     useEffect(() => {
-        setTextContent(comment.text_content);
+        if (comment.deleted) {
+            setTextContent('𝘊𝘰𝘮𝘮𝘦𝘯𝘵 𝘥𝘦𝘭𝘦𝘵𝘦𝘥!');
+        } else {
+            setTextContent(comment.text_content);
+        }
     }, [])
 
     return (
@@ -33,7 +47,7 @@ export default function TopLevelComment({ comment }) {
                 <Text variant='bodySmall'>{textContent}</Text>
             </View >
             {textContent !== '𝘊𝘰𝘮𝘮𝘦𝘯𝘵 𝘥𝘦𝘭𝘦𝘵𝘦𝘥!' && (
-                < CommentAction
+                <CommentAction
                     username={comment.commented_by.username}
                     commentId={comment._id}
                     postId={comment.post}
@@ -43,6 +57,7 @@ export default function TopLevelComment({ comment }) {
                     methods={{
                         deleteComment
                     }}
+                    comment={comment}
                 />
             )
             }

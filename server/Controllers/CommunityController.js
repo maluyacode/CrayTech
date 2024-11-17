@@ -1,7 +1,7 @@
 const Community = require("../Models/Community")
 const Post = require("../Models/Post")
 const { uploadSingle } = require("../Utils/ImageFile")
-
+const mongoose = require('mongoose')
 
 const errorHandler = ({ error, response, status = 500 }) => {
     console.log(error)
@@ -59,18 +59,41 @@ exports.getCommunity = async (req, res, next) => {
 
     try {
 
-        console.log(req.params)
-
         const community = await Community.findById(req.params.id)
+            .populate('banned_users')
+
+        const members = await Community.aggregate([
+            { $unwind: '$members' },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'members._id',
+                    foreignField: '_id',
+                    as: 'membersInfo'
+                }
+            },
+            { $match: { "_id": new mongoose.Types.ObjectId(req.params.id) } },
+            { $unwind: '$membersInfo' },
+            {
+                $project: {
+                    "membersInfo": 1,
+                    "members": 1,
+                }
+            }
+        ])
+
+        console.log(members);
+
         const posts = await Post.where("community", community._id)
             .populate("community")
             .populate('author');
 
-        console.log(posts);
+        // console.log(community);
 
         res.json({
             success: true,
             community: community,
+            members: members,
             posts,
         })
 
@@ -86,22 +109,49 @@ exports.getCommunities = async (req, res, next) => {
 
         let filterOptions = {}
 
-        if (req.query.filter) {
+        if (req.query.filter === 'moderating') {
             filterOptions = {
                 $or: [
-                    { created_by: req.user._id },  // Check if the user is the creator
-                    {
-                        members: {
-                            $elemMatch: { _id: req.user._id }  // Check if the user is a member
-                        }
-                    }
+                    { created_by: req.user._id },
                 ]
             };
         }
 
-        const communities = await Community.find(filterOptions);
+        if (req.query.filter === 'joined') {
+            filterOptions = {
+                $or: [
+                    { members: { $elemMatch: { _id: req.user._id, role: 'member' } } },
+                ]
+            }
+        }
 
-        console.log(communities);
+        if (req.query.filter === 'alljoined') {
+            filterOptions = {
+                $or: [
+                    { members: { $elemMatch: { _id: req.user._id, role: 'member' } } },
+                    { created_by: req.user._id },
+                ]
+            }
+        }
+
+        console.log(filterOptions.members);
+
+        if (req.query.filter === 'others') {
+
+            console.log('others');
+            filterOptions = {
+                members: {
+                    $not: { $elemMatch: { _id: req.user._id } }
+                }
+            }
+        }
+
+        if (req.query.keyword) {
+            const keyword = req.query.keyword;
+            filterOptions.name = { $regex: new RegExp(keyword, "i") };
+        }
+
+        const communities = await Community.find(filterOptions);
 
         res.json({
             success: true,
@@ -119,24 +169,45 @@ exports.updateCommunity = async (req, res, next) => {
     try {
 
         const community = await Community.findById(req.params.id);
+        console.log(req.body);
+        if (req.files) {
 
-        
-        let parseMembers = {};
+            if (req.files.banner) {
+                req.body.banner = await uploadSingle({
+                    imageFile: req.files.banner[0].path,
+                    request: req,
+                })
+            }
+
+            if (req.files.avatar) {
+                req.body.avatar = await uploadSingle({
+                    imageFile: req.files.avatar[0].path,
+                    request: req,
+                })
+            }
+        }
+
+
         if (req.body.members) {
-            parseMembers = JSON.parse(req.body.members)
+            req.body.members = JSON.parse(req.body.members)
+        } else {
+            delete req.body.members;
+        }
+
+        if (req.body.banned_users) {
+            req.body.banned_users = JSON.parse(req.body.banned_users)
+        } else {
+            delete req.body.banned_users;
         }
         // add other fields to be updated when needed
 
         const newCommunityData = {
             ...community.toObject(),
             ...req.body,
-            members: parseMembers,
             // add other fields to be updated when needed
         }
 
         const updatedCommunity = await Community.findByIdAndUpdate(req.params.id, newCommunityData, { new: true });
-
-        console.log(updatedCommunity);
 
         res.json({
             success: true,

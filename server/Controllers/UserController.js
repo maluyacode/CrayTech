@@ -72,9 +72,7 @@ exports.login = async (req, res, next) => {
 exports.update = async (req, res, next) => {
 
   try {
-
-    const profile = {};
-
+    console.log(req.body);
     if (req.file) {
 
       req.body = {
@@ -88,6 +86,15 @@ exports.update = async (req, res, next) => {
       }
     } else {
       delete req.body?.avatar
+    }
+
+    if (req.body.preferences) {
+      req.body = {
+        ...req.body,
+        $set: {
+          "profile.preferences": JSON.parse(req.body.preferences),
+        }
+      }
     }
 
     const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true, useFindAndModify: false });
@@ -104,3 +111,45 @@ exports.update = async (req, res, next) => {
     errorHandler({ error: err, response: res })
   }
 };
+
+exports.allUsers = async (req, res, next) => {
+  try {
+
+    let query = { _id: { $ne: req.user._id } };
+
+    if (req.query.keyword) {
+      const keyword = req.query.keyword;
+      query.username = { $regex: new RegExp(keyword, "i") };
+    }
+
+    const users = await User.find(query);
+
+    return res.status(200).json({
+      success: true,
+      users: users,
+    })
+
+  } catch (err) {
+    console.log(err)
+    errorHandler({ error: err, response: res })
+  }
+}
+
+exports.notificationToken = async (req, res, next) => {
+  try {
+
+    const user = await User.findById(req.params.id);
+
+    user.notificationToken = req.body.notificationToken
+    user.save();
+
+    return res.send({
+      message: 'Token recieve',
+      success: true,
+    })
+
+  } catch (err) {
+    console.log(err)
+    errorHandler({ error: err, response: res })
+  }
+}

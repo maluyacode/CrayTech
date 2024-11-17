@@ -18,18 +18,18 @@ import Loader from '@/Components/Loader';
 export default function PostDetails({ navigation, route }) {
 
     const appTheme = useTheme();
+    const dispatch = useDispatch();
+    const [isLoading, setIsLoading] = useState(false);
     const { _id } = route.params;
     const [post, setPost] = useState();
     const { token } = useSelector(state => state.auth);
     const { posts, comments, } = useSelector(state => state.post);
-    const dispatch = useDispatch();
-    const [isLoading, setIsLoading] = useState(false);
 
     const getPost = async () => {
         setIsLoading(true)
         try {
 
-            const { post, comments } = await getPostAPI({ token, id: _id });
+            const { post, comments, commentsCount } = await getPostAPI({ token, id: _id });
             post.post_type = post.videos.length > 0 ? "video" : post.images.length > 0 ? "image" : post.poll.length > 0 ? "poll" : "text"
 
             setPost(post);

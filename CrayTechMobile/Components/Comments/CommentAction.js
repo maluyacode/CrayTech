@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { downvoteCommentAPI, postCommentAPI, upvoteCommentAPI } from '@/services/commentService';
 import { setComments } from '@/state/postSlice';
 
-export default function CommentAction({ commentId, postId, textContent, username, upvotes, downvotes, methods }) {
+export default function CommentAction({ commentId, postId, textContent, username, upvotes, downvotes, methods, comment }) {
 
     const [visible, setVisible] = useState(false);
     const appTheme = useTheme();
@@ -132,11 +132,18 @@ export default function CommentAction({ commentId, postId, textContent, username
                         anchor={
                             <IconButton onPress={openMenu} icon={'dots-vertical'} size={20} />
                         }>
-                        <Menu.Item onPress={() => { }} title="Edit" />
-                        <Menu.Item onPress={() => {
-                            closeMenu()
-                            methods?.deleteComment()
-                        }} title="Delete" />
+
+                        {comment?.commented_by._id === user._id &&
+                            <Menu.Item onPress={() => { }} title="Edit" />
+                        }
+
+                        {comment?.commented_by._id === user._id &&
+                            <Menu.Item onPress={() => {
+                                closeMenu()
+                                methods?.deleteComment()
+                            }} title="Delete" />
+                        }
+
                         <Menu.Item onPress={() => { }} title="Report" />
                     </Menu>
                 </View>

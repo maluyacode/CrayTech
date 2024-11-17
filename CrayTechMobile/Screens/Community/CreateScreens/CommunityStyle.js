@@ -9,7 +9,7 @@ const LeftContent = props => <Avatar.Icon {...props} icon="folder" />
 
 export default function CommunityStyle({ route, navigation }) {
 
-    const communityCreateData = route.params;
+    const communityCreateData = route?.params || {};
     const appTheme = useTheme();
 
     const [avatar, setAvatar] = useState(null);

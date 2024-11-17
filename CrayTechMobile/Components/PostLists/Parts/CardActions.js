@@ -1,19 +1,22 @@
 import { Pressable, TouchableOpacity, View } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Card, Text, useTheme } from 'react-native-paper'
 import { Ionicons } from 'react-native-vector-icons'
 import { useDispatch, useSelector } from 'react-redux';
 import { downvoteAPI, upvoteAPI } from '@/services/postService';
 import { setPosts } from '@/state/postSlice';
 import { useNavigation } from '@react-navigation/native'
+import axios from 'axios';
+import baseURL from '@/assets/common/baseUrl';
 
-export default function CardActions({ post = {}, }) {
+export default function CardActions({ post = {} }) {
 
     const appTheme = useTheme();
     const { token, user } = useSelector(state => state.auth);
     const { posts } = useSelector(state => state.post);
     const dispatch = useDispatch();
     const navigation = useNavigation();
+    const [commentsCount, setCommentsCount] = useState(0);
 
     const updatePostState = (data) => {
         const updatedPost = data.post;
@@ -75,6 +78,28 @@ export default function CardActions({ post = {}, }) {
         return votes?.find(vote => vote === user._id) ? true : false
     }
 
+    const getComments = async () => {
+        try {
+
+            const { data } = await axios.get(`${baseURL}/post/comments/${post._id}`, {
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                }
+            })
+
+            const { commentsCount } = data;
+
+            setCommentsCount(commentsCount);
+
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    useEffect(() => {
+        getComments();
+    }, [post])
+
     return (
         <Card.Actions>
             <View style={{ width: '100%', padding: 5, flexDirection: 'row', gap: 10, }}>
@@ -109,7 +134,7 @@ export default function CardActions({ post = {}, }) {
                 <TouchableOpacity onPress={() => navigation.navigate('PostDetails', { _id: post._id })}>
                     <View style={{ flexDirection: 'row', borderWidth: 0.2, paddingVertical: 4, paddingHorizontal: 10, borderColor: appTheme.colors.secondary, borderRadius: 10 }}>
                         <Ionicons name='chatbubbles' size={25} color={appTheme.colors.secondary} />
-                        <Text style={{ alignSelf: 'center', marginRight: 5, marginLeft: 5 }} variant='bodyLarge'>{post.comments?.length}</Text>
+                        <Text style={{ alignSelf: 'center', marginRight: 5, marginLeft: 5 }} variant='bodyLarge'>{commentsCount}</Text>
                     </View>
                 </TouchableOpacity>
 

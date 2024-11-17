@@ -20,7 +20,7 @@ export default function PollPostContent({ post = {} }) {
     }
 
     return (
-        <Card.Content>
+        <Card.Content style={{ paddingBottom: 10, }}>
 
             <Text variant="titleSmall">{post.title}</Text>
             <Text variant="bodySmall">{post.body}</Text>

@@ -13,7 +13,7 @@ export default function CardTitle({ post = {} }) {
             titleStyle={{ marginLeft: -5, marginBottom: -5 }}
 
             left={(props) => (
-                <Avatar.Image {...props} source={{ uri: post.community?.avatar?.url }} icon="folder" />
+                <Avatar.Image {...props} source={{ uri: post.community?.avatar?.url || placeHolder }} icon="folder" />
             )}
 
             right={(props) => (
@@ -22,3 +22,5 @@ export default function CardTitle({ post = {} }) {
         />
     )
 }
+
+const placeHolder = 'https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png'

@@ -15,11 +15,13 @@ const categoryRoutes = require("./Routes/CategoryRoutes");
 const communityRoutes = require("./Routes/CommunityRoutes");
 const postRoutes = require("./Routes/PostRoutes");
 const commentRoutes = require('./Routes/CommentRoutes');
+const chatRoutes = require('./Routes/ChatRoutes')
 
 app.use("/", userRoutes);
 app.use("/", categoryRoutes);
 app.use("/", communityRoutes);
 app.use("/", postRoutes);
 app.use("/", commentRoutes);
+app.use("/", chatRoutes);
 
 module.exports = app;

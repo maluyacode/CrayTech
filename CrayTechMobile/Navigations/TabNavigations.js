@@ -9,16 +9,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { removeAuth } from '@/state/authSlice';
 import Communities from '@/Screens/Community/Communities';
 import CommunityNavigations from './CommunityNavigations';
+import Chat from '@/Screens/Chat';
+import ChatNavigations from './ChatNavigations';
+import { socket } from '@/socket';
+import Setting from '@/Screens/Profile/Setting';
+import SettingNavigations from './SettingNavigations';
+import SearchNavigation from './SearchNavigation';
 
 const Tab = createMaterialTopTabNavigator();
-
-const Chat = () => {
-    return (
-        <View>
-            <Text>Chat</Text>
-        </View>
-    )
-}
 
 const Notification = () => {
     return (
@@ -33,7 +31,12 @@ const Settings = () => {
     return (
         <View style={{ flex: 1 }}>
             <Text>Notification</Text>
-            <Button onPress={() => dispatch(removeAuth())}>Logout</Button>
+            <Button onPress={() => {
+
+                socket.disconnect();
+                dispatch(removeAuth())
+
+            }}>Logout</Button>
         </View>
     )
 }
@@ -54,7 +57,7 @@ export default function TabNavigations() {
                         backgroundColor: appTheme.colors.surfaceVariant
                     },
                     tabBarActiveTintColor: appTheme.colors.primary,
-                    tabBarInactiveTintColor: appTheme.colors.tertiary
+                    tabBarInactiveTintColor: appTheme.colors.tertiary,
                 }}
             >
                 <Tab.Screen name='Home' component={HomeNavagations}
@@ -76,7 +79,7 @@ export default function TabNavigations() {
                     }}
                 />
 
-                <Tab.Screen name='Chat' component={Chat}
+                <Tab.Screen name='ChatNavigations' component={ChatNavigations}
                     options={{
                         tabBarShowLabel: false,
                         tabBarIcon: ({ color }) => (
@@ -85,17 +88,25 @@ export default function TabNavigations() {
                     }}
                 />
 
-                <Tab.Screen name='Notification' component={Notification}
+                {/* <Tab.Screen name='Notification' component={Notification}
                     options={{
                         tabBarShowLabel: false,
                         tabBarIcon: ({ color }) => (
                             <Ionicons name="notifications" color={color} size={26} />
                         )
                     }}
+                /> */}
+
+                <Tab.Screen name='Search' component={SearchNavigation}
+                    options={{
+                        tabBarShowLabel: false,
+                        tabBarIcon: ({ color }) => (
+                            <MaterialCommunityIcons name="feature-search" color={color} size={26} />
+                        )
+                    }}
                 />
 
-
-                <Tab.Screen name='Settings' component={Settings}
+                <Tab.Screen name='Settings' component={SettingNavigations}
                     options={{
                         tabBarShowLabel: false,
                         tabBarIcon: ({ color }) => (

@@ -33,3 +33,14 @@ export const downvoteCommentAPI = async ({ token, body, id }) => {
 
     return data;
 }
+
+export const deleteCommentAPI = async ({ token, id }) => {
+
+    const { data } = await axios.delete(`${baseURL}/comment/delete/${id}`, {
+        headers: {
+            "Authorization": `Bearer ${token}`,
+        }
+    });
+
+    return data;
+}

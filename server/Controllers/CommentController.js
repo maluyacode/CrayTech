@@ -1,4 +1,5 @@
 const Comment = require('../Models/Comment');
+const notify = require('../Utils/notify');
 
 const errorHandler = ({ error, response, status = 500 }) => {
     console.log(error)
@@ -16,8 +17,6 @@ exports.createComment = async (req, res, next) => {
 
         const repliedComment = await Comment.findById(req.body.replied_to);
 
-        console.log(repliedComment);
-
         if (repliedComment) {
             repliedComment.replies.push(comment._id);
             await repliedComment.save();
@@ -31,7 +30,56 @@ exports.createComment = async (req, res, next) => {
                 .sort({ createdAt: -1 })
         }
 
-        console.log(comments);
+
+        if (comment.replied_to.toString() === comment.post.toString()) {
+
+            let commentData = await comment.populate({
+                path: 'post',
+                populate: {
+                    path: 'author'
+                }
+            });
+
+            const author = commentData.post.author;
+            const post = commentData.post;
+
+            if (author.profile.preferences.notifications.comments) {
+                notify.sendMessage({
+                    title: `${req.user.username} commented on your post`,
+                    body: comment.text_content,
+                    subtitle: 'Comment',
+                    user: req.user,
+                    tokens: [author.notificationToken]
+                });
+            }
+
+        } else {
+
+            let commentData = await comment.populate({
+                path: 'replied_to',
+                model: 'comment',
+                populate: {
+                    path: 'commented_by'
+                }
+            });
+
+
+            const author = commentData.replied_to.commented_by;
+            const textContent = commentData.text_content;
+            console.log(author)
+            if (author.profile.preferences.notifications.replies) {
+                notify.sendMessage({
+                    title: `${req.user.username} replied to your comment`,
+                    body: textContent,
+                    subtitle: 'Reply',
+                    user: req.user,
+                    tokens: [author.notificationToken]
+                });
+            }
+
+
+        }
+
 
         return res.json({
             message: "Comment posted!",
@@ -48,8 +96,6 @@ exports.createComment = async (req, res, next) => {
 exports.getAllComments = async (req, res, next) => {
 
     try {
-
-
 
         return res.json({
             message: "Comment posted!",
@@ -128,4 +174,46 @@ exports.downvoteComment = async (req, res, next) => {
         errorHandler({ error: err, response: res })
     }
 
+}
+
+exports.postComments = async (req, res, next) => {
+    try {
+
+        let query = {}
+        if (req.params.id !== "undefined") {
+            query = {
+                post: req.params.id
+            }
+        }
+
+        const comments = await Comment.find(query);
+
+        return res.json({
+            message: "All comments!",
+            success: true,
+            commentsCount: comments.length
+        })
+
+    } catch (err) {
+        errorHandler({ error: err, response: res })
+    }
+}
+
+exports.deleteComment = async (req, res, next) => {
+    try {
+
+        const comment = await Comment.findById(req.params.id);
+
+        comment.delete(req.user._id);
+
+        Comment.delete({ replied_to: req.params.id }).exec()
+
+        return res.json({
+            message: "Comment delete!",
+            success: true,
+        })
+
+    } catch (err) {
+        errorHandler({ error: err, response: res })
+    }
 }

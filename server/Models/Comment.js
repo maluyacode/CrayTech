@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Populate = require("mongoose-autopopulate");
+const mongooseDelete = require('mongoose-delete');
 
 const commentModel = new mongoose.Schema({
     text_content: {
@@ -19,7 +20,6 @@ const commentModel = new mongoose.Schema({
     },
     replied_to: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Comment',
         default: null,
     },
     replies: [
@@ -43,6 +43,7 @@ commentModel.pre('findOne', function () {
     this.sort({ createdAt: -1 });
 });
 
+commentModel.plugin(mongooseDelete, { overrideMethods: 'all', deletedAt: true, deletedBy: true, });
 commentModel.plugin(Populate);
 
 module.exports = mongoose.model('comment', commentModel)

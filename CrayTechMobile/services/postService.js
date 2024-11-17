@@ -21,9 +21,9 @@ export const downvoteAPI = async ({ token, body, post_id }) => {
     return data;
 }
 
-export const getPostsAPI = async ({ token }) => {
+export const getPostsAPI = async ({ token, query = '' }) => {
 
-    const { data } = await axios.get(`${baseURL}/posts`, {
+    const { data } = await axios.get(`${baseURL}/posts?${query}`, {
         headers: {
             "Authorization": `Bearer ${token}`
         }

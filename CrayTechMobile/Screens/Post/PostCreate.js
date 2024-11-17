@@ -97,10 +97,6 @@ export default function PostCreate({ navigation }) {
     }
 
     useEffect(() => {
-        hideTabBar(navigation, appTheme);
-    }, [navigation]);
-
-    useEffect(() => {
         let canProceed = true;
 
         // Validate poll options if the post type is a poll
@@ -151,6 +147,10 @@ export default function PostCreate({ navigation }) {
         navigation.navigate("SelectCommunity", data);
 
     }
+
+    useEffect(() => {
+        hideTabBar(navigation, appTheme);
+    }, [navigation]);
 
     return (
         <View style={{ flex: 1, backgroundColor: appTheme.colors.background }}>

@@ -5,10 +5,10 @@ import { Card, Text } from 'react-native-paper'
 
 export default function VideoPostContent({ post = {} }) {
     return (
-        <Card.Content>
+        <Card.Content style={{ paddingBottom: 10, }}>
             <Text variant="titleSmall">{post.title}</Text>
             <Text variant="bodySmall">{post.body}</Text>
-            <ScrollView horizontal={true}>
+            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
                 <View style={{ marginTop: 10, flexDirection: 'row', gap: 10 }}>
                     {post.videos.map(video => (
                         <Video
